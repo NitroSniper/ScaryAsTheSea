@@ -28,15 +28,14 @@ class PlayerObject(object):
         #Customizable
         #----------------------------------------------------
         #General
-        self.angleIncrement = -1
-        self.angleIncrementMoving = -4
-        self.color = (110, 1, 95)
+        self.angleIncrement = 2
+        self.angleIncrementMoving = 2
         self.color = (3, 207, 252)
         #Trails
-        self.trailTimer = 0.01
-        self.trailDuration = 3
-        self.MinorChanges = (0, 150, True)
-        self.alphaChangeDuration = (0.5, sinAlpha)
+        self.trailTimer = 0.1
+        self.trailDuration = 2
+        self.MinorChanges = (0, 200, True)
+        self.alphaChangeDuration = (2, modAlpha)
         self.numSides = numVertices
         #----------------------------------------------------
 

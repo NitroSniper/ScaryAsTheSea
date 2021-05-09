@@ -10,10 +10,9 @@ import pygame
 # if lowerbound + alpha%upperbound
 
 
-
 def sinAlpha(alpha, alphaLimit, reverse, dif, normalWaveLenth, midDif):
     if reverse:
-        return midDif + sin(alpha*normalWaveLenth - pi)*dif/2
+        return midDif + sin(alpha*normalWaveLenth + pi/2)*dif/2
     return midDif + sin(alpha*normalWaveLenth - pi/2)*dif/2
     
 
@@ -39,6 +38,10 @@ class TrailTemplate(object):
         self.alphaDif = self.alphaLimit[1] - self.alphaLimit[0]
         self.alphaWaveLength = 2*pi/self.alphaDif
         self.midDif = (self.alphaLimit[1] + self.alphaLimit[0])/2
+        
+
+        self.image = GFXDrawShape(*self.PolyInfo, self.angle, alpha=self.alphaChangeDuration[1](
+                                        self.alpha, self.alphaLimit, self.reverseAlpha, self.alphaDif, self.alphaWaveLength, self.midDif))
     def isItTimeToKill(self, start, whenKill):
         if TimeIt(whenKill, start):
             return True
@@ -52,7 +55,8 @@ class MotionBlurEffectTrail(TrailTemplate):
         
         if not self.isItTimeToKill(self.start, self.whenKill):
             self.angle += self.angleMomentum*dt
-            self.image = GFXDrawShape(*self.PolyInfo, self.angle, alpha=self.alphaChangeDuration[1](self.alpha, self.alphaLimit, self.reverseAlpha, self.alphaDif, self.alphaWaveLength, self.midDif))
+            self.image = GFXDrawShape(*self.PolyInfo, self.angle, alpha=self.alphaChangeDuration[1](
+                                        self.alpha, self.alphaLimit, self.reverseAlpha, self.alphaDif, self.alphaWaveLength, self.midDif))
             
             return  # Kill or not
         TRAILS.remove(self)

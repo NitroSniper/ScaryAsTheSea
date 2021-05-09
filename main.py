@@ -42,7 +42,7 @@ P1.customize({
     'color' : (110, 1, 95),
     'trailDuration' : 1,
     'trailTimer' : 0.01,
-    'MinorChanges' : (0, 150, True),
+    'MinorChanges' : (0, 150, False),
     'alphaChangeDuration' : (0.5, sinAlpha),
     'numSides' : 5
     
@@ -50,14 +50,14 @@ P1.customize({
 
 
 P2.customize({
-    'angleIncrement' : -1,
-    'angleIncrementMoving' : -4,
+    'angleIncrement' : -2,
+    'angleIncrementMoving' : -2,
     'color' : (3, 207, 252),
     'trailDuration' : 2,
-    'trailTimer' : 0.01,
-    'MinorChanges' : (100, 255, True),
-    'alphaChangeDuration' : (0.5, modAlpha),
-    'numSides' : 3
+    'trailTimer' : 0.1,
+    'MinorChanges' : (0, 200, True),
+    'alphaChangeDuration' : (2, modAlpha),
+    'numSides' : 4
     
 })
 
@@ -71,8 +71,6 @@ displayframe = []
 l1, l2, l3, l4 = [], [], [], []
 
 HDMode = True
-
-import pygame.gfxdraw
 
 
 def DrawImages():
