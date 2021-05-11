@@ -43,8 +43,6 @@ def RotPosition(Image, Angle, Position):
 
 def clamp(n, minn, maxn):
     return max(min(maxn, n), minn)
-#
-hello = 'something'
 
 
 def OutOfBounds(SCREEN_SIZE, PlayerObject, PlayerRect):
@@ -66,19 +64,20 @@ def GFXDrawShape(numPoints, radius, color, angleOffset=0,alpha=255): #
     return surf
 
 def GFXDrawShapes(listOfGFXDrawShape):
-    maxRadius = max(x[1] for x in listOfGFXDrawShape)
+    maxRadius = max(x[1] for x in listOfGFXDrawShape) 
     surf = pygame.Surface((2*(maxRadius), 2*(maxRadius)), pygame.SRCALPHA)
     for numPoints, radius, color, angleOffset, alpha in listOfGFXDrawShape:
         angle = 2 * pi / numPoints
         vertices = []
         for i in range(numPoints):
-            vertices.append((radius + radius * sin(i * angle + radians(angleOffset)), radius + radius * cos(i * angle + radians(angleOffset))))
-        gfxdraw.aapolygon(surf, vertices, color + (alpha,))
+            vertices.append((maxRadius + radius * sin(i * angle + radians(angleOffset)), maxRadius + radius * cos(i * angle + radians(angleOffset))))
+        # gfxdraw.aapolygon(surf, vertices, color + (alpha,))
         gfxdraw.filled_polygon(surf, vertices, color + (alpha,))
+    # pygame.image.save(surf, 'Hello.png')
+    # raise Exception
     return surf
 
-def getVarName(func):
-    return getfullargspec(func).args
+
 
 if __name__ == '__main__':
     GFXDrawShapes([(3, 20, (255, 255, 255)),
