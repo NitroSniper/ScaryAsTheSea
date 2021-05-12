@@ -2,8 +2,8 @@
 from statistics import mean
 from time import perf_counter as perf_counter
 from math import pi
-
 from time import time
+from Bullets import *
 from Player import *
 from engine import *
 from pygame import gfxdraw
@@ -81,15 +81,18 @@ def Game():
     start = perf_counter()
     PLAYERS = [P1, P2]
     TRAILS = []
+    BULLETS = []
     angle = 0
-    surf = pygame.transform.scale(pygame.image.load('Images\ImageTemplate\Basic.png'), (80, 80))
+    surf = pygame.transform.scale(pygame.image.load('Images\ImageTemplate\Basic.png'), (120, 120))
 
     programRunning = True
+    Point1 = ObjectPoint((400, 400), 0, 0, 1, 0)
+    BULLETS.append(SimpleBullet(240, 'triangleWithCore', (700,100), 0, 0, 0, 1, ParentObject=Point1))
     while programRunning:
         dt = (perf_counter() - start)*120
         start = perf_counter()
         lstart = perf_counter()
-        angle += 0.5*dt
+        angle += 0.9*dt
         
         for event in pygame.event.get():
             for keyState, value in PLAYERLOOPORDER:
@@ -105,12 +108,16 @@ def Game():
 
         l1.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
+
+        Point1.update(dt)
         for player in PLAYERS:
             player.update(dt, TRAILS)
 
         for trail in TRAILS:
             trail.update(dt, TRAILS)
-
+        for bullet in BULLETS:
+            bullet.update(dt)
+    
         l2.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
         #Drawing
@@ -126,9 +133,16 @@ def Game():
             # RotationBlit(SCREEN, player.image, player.position, player.angle)
             SCREENRECT.append(SCREEN.blit(player.image, player.position))
 
+        for bullet in BULLETS:
+            SCREENRECT.append(SCREEN.blit(bullet.image, bullet.position))
+        # SCREEN.blit(GFXDrawShapes([(3, 240, (255, 255, 255), angle, 255), (3, 120, (0, 0 ,0 ), angle, 0), (4, 45, (255, 0, 0), -1*angle+90, 255)]), (400,0))
+        # SCREEN.blit(aGFXDrawShapes([(3, 240, (255, 255, 255), angle, 255), (3, 120, (0, 0 ,0 ), angle, 0), (4, 45, (255, 0, 0), -1*angle+90, 255)]), (880,0))
+        # SCREEN.blit(aGFXDrawShapes([(3, 240, (255, 255, 255), angle, 255), (3, 120, (0, 0 ,0 ), angle, 0), (4, 45, (255, 0, 0), -1*angle+90, 255)]), (640,480))
+        IMG = pygame.transform.rotate(surf, angle)
+       # SCREEN.blit(IMG, (800 - IMG.get_width()/2, 600 - IMG.get_height()/2))
+        
         l3.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
-        
         
         
         # alist = []
@@ -141,11 +155,7 @@ def Game():
 
         # SCREEN.blit(GFXDrawShapes([(3, 160, (255, 255, 255), angle, 255)]), (400,400))
         #SCREEN.blit(GFXDrawShapes([(3, 40, (255, 255, 255), 0, 255), (3, 20, (0, 0 ,0 ), 0, 0)]), (600,400))
-        SCREEN.blit(GFXDrawShapes([(3, 80, (255, 255, 255), angle, 255), (3, 40, (0, 0 ,0 ), angle, 0), (4, 15, (255, 0, 0), -1*angle+90, 255)]), (800,400))
-        IMG = pygame.transform.rotate(surf, angle)
-        SCREEN.blit(IMG, (800 - IMG.get_width()/2, 600 - IMG.get_height()/2))
 
-        
         
         
         if not HDMode: DISPLAY.blit(pygame.transform.scale(SCREEN, WINDOW_SIZE), (0, 0))

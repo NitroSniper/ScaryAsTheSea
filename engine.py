@@ -63,6 +63,21 @@ def GFXDrawShape(numPoints, radius, color, angleOffset=0,alpha=255): #
     gfxdraw.filled_polygon(surf, vertices, color + (alpha,))
     return surf
 
+def aGFXDrawShapes(listOfGFXDrawShape):
+    maxRadius = max(x[1] for x in listOfGFXDrawShape) 
+    surf = pygame.Surface((2*(maxRadius), 2*(maxRadius)), pygame.SRCALPHA)
+    for numPoints, radius, color, angleOffset, alpha in listOfGFXDrawShape:
+        angle = 2 * pi / numPoints
+        vertices = []
+        for i in range(numPoints):
+            vertices.append((maxRadius + radius * sin(i * angle + radians(angleOffset)), maxRadius + radius * cos(i * angle + radians(angleOffset))))
+        gfxdraw.aapolygon(surf, vertices, color + (alpha,))
+        gfxdraw.filled_polygon(surf, vertices, color + (alpha,))
+    # pygame.image.save(surf, 'Hello.png')
+    # raise Exception
+    return surf
+
+
 def GFXDrawShapes(listOfGFXDrawShape):
     maxRadius = max(x[1] for x in listOfGFXDrawShape) 
     surf = pygame.Surface((2*(maxRadius), 2*(maxRadius)), pygame.SRCALPHA)
@@ -76,7 +91,6 @@ def GFXDrawShapes(listOfGFXDrawShape):
     # pygame.image.save(surf, 'Hello.png')
     # raise Exception
     return surf
-
 
 
 if __name__ == '__main__':
