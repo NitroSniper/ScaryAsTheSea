@@ -2,7 +2,6 @@
 
 from engine import GFXDrawShapes
 from engine import *
-from math import sqrt
 from time import perf_counter
 dict = {
     'triangleWithCore' : ((3, 1, (255, 255, 255), 1, 255), (3, 0.5, (0, 0 ,0 ), 1, 0), (4, 0.1875, (255, 0, 0), -1, 255))
@@ -15,9 +14,8 @@ class BulletTemplate(object):
         pass
 
 class SimpleBullet(BulletTemplate):
-    def __init__(self, size, PolyTemplate, position, velocity, angle, angleIncrement, whenKill, ParentObject=None, customizeDict=None):
+    def __init__(self, size, PolyTemplate, position, velocity, angle, angleIncrement, whenKill, customizeDict=None):
         self.size = size
-        self.positionVector = list(position)
         self.position = list(position)
         self.velocity = velocity
         self.angle = angle
@@ -36,33 +34,9 @@ class SimpleBullet(BulletTemplate):
 
         self.WhenKill = whenKill
         self.start = perf_counter()
-
-        if ParentObject is not None:
-            self.parent = ParentObject
-        else:
-            self.parent = None
         
     def update(self, dt):
         self.angle += self.angleIncrement*dt
-
-        if self.parent is not None: 
-            angle = self.parent.angle + self.angle
-            self.position =  tuple(sum(x) for x in zip(self.positionVector, self.parent.position))
-        else: 
-            angle = self.angle
-            self.position = self.positionVector
-
         for index, poly in enumerate(self.PolyInfo.values()):
-            poly[3] = angle*self.PolyScalar[index][1]
+            poly[3] = self.angle*self.PolyScalar[index][1]
         self.image = GFXDrawShapes(tuple(self.PolyInfo.values()))
-
-
-class ObjectPoint(object):
-    def __init__(self, position, direction, angle, angleIncrement, velocity): #direction is just an angle which tells it where it is moving
-        self.position = list(position)
-        self.angle = angle
-        self.angleIncrement = angleIncrement
-        self.direction = direction
-        self.velocity = velocity
-    def update(self, dt):
-        self.angle += self.angleIncrement*dt

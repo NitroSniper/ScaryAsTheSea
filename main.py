@@ -86,8 +86,7 @@ def Game():
     surf = pygame.transform.scale(pygame.image.load('Images\ImageTemplate\Basic.png'), (120, 120))
 
     programRunning = True
-    Point1 = ObjectPoint((400, 400), 0, 0, 1, 0)
-    BULLETS.append(SimpleBullet(240, 'triangleWithCore', (700,100), 0, 0, 0, 1, ParentObject=Point1))
+    BULLETS.append(SimpleBullet(240, 'triangleWithCore', (100,100), 0, 0, 1, 1))
     while programRunning:
         dt = (perf_counter() - start)*120
         start = perf_counter()
@@ -108,8 +107,6 @@ def Game():
 
         l1.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
-
-        Point1.update(dt)
         for player in PLAYERS:
             player.update(dt, TRAILS)
 
@@ -117,7 +114,7 @@ def Game():
             trail.update(dt, TRAILS)
         for bullet in BULLETS:
             bullet.update(dt)
-    
+
         l2.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
         #Drawing
