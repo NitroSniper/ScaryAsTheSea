@@ -34,18 +34,18 @@ DISPLAY = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # True Screen
 # Screen to Blit on other Screen
 SCREEN = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-P1 = PlayerObject((K_w, K_s, K_a, K_d), K_SPACE, 4, (0,0))
-P2 = PlayerObject((K_UP, K_DOWN, K_LEFT, K_RIGHT), K_SPACE, 4, (400,200))
+P1 = PlayerObject((K_w, K_s, K_a, K_d), K_SPACE, 4, (0, 0))
+P2 = PlayerObject((K_UP, K_DOWN, K_LEFT, K_RIGHT), K_SPACE, 4, (400, 200))
 P1.customize({
-    'angleIncrement' : -1,
-    'angleIncrementMoving' : -4,
-    'color' : (110, 1, 95),
-    'trailDuration' : 1,
-    'trailTimer' : 0.01,
-    'MinorChanges' : (0, 150, False),
-    'alphaChangeDuration' : (0.5, sinAlpha),
-    'numSides' : 5
-    
+    'angleIncrement': -1,
+    'angleIncrementMoving': -4,
+    'color': (110, 1, 95),
+    'trailDuration': 1,
+    'trailTimer': 0.01,
+    'MinorChanges': (0, 150, False),
+    'alphaChangeDuration': (0.5, sinAlpha),
+    'numSides': 5
+
 })
 
 
@@ -58,7 +58,7 @@ P1.customize({
 #     'MinorChanges' : (0, 200, True),
 #     'alphaChangeDuration' : (2, modAlpha),
 #     'numSides' : 3
-    
+
 # })
 
 SCREENTODISPLAYSCALAR = tuple(
@@ -81,24 +81,28 @@ def Game():
     SCREEN.fill((14, 18, 36))
     DISPLAY.blit(pygame.transform.scale(SCREEN, WINDOW_SIZE), (0, 0))
     pygame.display.update()
-    
+
     start = perf_counter()
     PLAYERS = [P1, P2]
     TRAILS = []
     BULLETS = []
     angle = 0
-    surf = pygame.transform.scale(pygame.image.load('Images\ImageTemplate\Basic.png'), (120, 120))
+    surf = pygame.transform.scale(pygame.image.load(
+        'Images\ImageTemplate\Basic.png'), (120, 120))
 
     programRunning = True
-    BULLETS.append(SimpleBullet(120, 'triangleWithCore', (700,100), 0, 0, 1, 1))
-    BULLETS.append(SimpleBullet(120, 'triangleWithCore', (820,340), 0, 0, 1, 1))
-    BULLETS.append(SimpleBullet(120, 'triangleWithCore', (940,100), 0, 0, 1, 1))
+    BULLETS.append(SimpleBullet(
+        120, 'triangleWithCore', (700, 100), 0, 0, 1, 1))
+    BULLETS.append(SimpleBullet(
+        120, 'triangleWithCore', (820, 340), 0, 0, 1, 1))
+    BULLETS.append(SimpleBullet(
+        120, 'triangleWithCore', (940, 100), 0, 0, 1, 1))
     while programRunning:
         dt = (perf_counter() - start)*120
         start = perf_counter()
         lstart = perf_counter()
         angle += 0.9*dt
-        
+
         for event in pygame.event.get():
             for keyState, value in PLAYERLOOPORDER:
                 if event.type == keyState:
@@ -123,10 +127,9 @@ def Game():
 
         l2.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
-        #Drawing
+        # Drawing
         SCREENRECT = []
         SCREEN.fill((14, 18, 36))
-
 
         for trail in TRAILS:
             SCREENRECT.append(SCREEN.blit(trail.image, trail.position))
@@ -140,31 +143,30 @@ def Game():
             SCREENRECT.append(SCREEN.blit(bullet.image, bullet.position))
         IMG = pygame.transform.rotate(surf, angle)
        # SCREEN.blit(IMG, (800 - IMG.get_width()/2, 600 - IMG.get_height()/2))
-        
+
         l3.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
-        
-        
+
         # alist = []
         # for rect in SCREENRECT:
         #     alist.append((rect[0]*SCREENTODISPLAYSCALAR[0],
         #                   rect[1]*SCREENTODISPLAYSCALAR[1],
         #                   rect[2]*SCREENTODISPLAYSCALAR[0]+1,
         #                   rect[3]*SCREENTODISPLAYSCALAR[1]+1))
-    
 
         # SCREEN.blit(GFXDrawShapes([(3, 160, (255, 255, 255), angle, 255)]), (400,400))
         #SCREEN.blit(GFXDrawShapes([(3, 40, (255, 255, 255), 0, 255), (3, 20, (0, 0 ,0 ), 0, 0)]), (600,400))
 
-        
-        
-        if not HDMode: DISPLAY.blit(pygame.transform.scale(SCREEN, WINDOW_SIZE), (0, 0))
-        else: DISPLAY.blit(pygame.transform.smoothscale(SCREEN, WINDOW_SIZE), (0, 0))
+        if not HDMode:
+            DISPLAY.blit(pygame.transform.scale(SCREEN, WINDOW_SIZE), (0, 0))
+        else:
+            DISPLAY.blit(pygame.transform.smoothscale(
+                SCREEN, WINDOW_SIZE), (0, 0))
         pygame.display.update()
         l4.append(1/(perf_counter()-lstart))
         displayframe.append(1/(perf_counter()-start))
         # programRunning = False
-    print (f'''
+    print(f'''
                Event Handler: {mean(l1)}
                Update Handler: {mean(l2)}
                Drawing Handler: {mean(l3)}

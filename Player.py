@@ -9,6 +9,7 @@ SIZE = 20
 # https://stackoverflow.com/questions/67168804/how-to-make-a-circular-countdown-timer-in-pygame
 # https://stackoverflow.com/questions/3436453/calculate-coordinates-of-a-regular-polygons-vertices
 
+
 class PlayerObject(object):
     def __init__(self, moveSetKey, dashKey, numVertices, position):
         self.moveSet = moveSetKey
@@ -24,33 +25,29 @@ class PlayerObject(object):
                          'LEFT': False, 'RIGHT': False}
         self.trailStart = perf_counter()
 
-
-        #Customizable
-        #----------------------------------------------------
-        #General
+        # Customizable
+        # ----------------------------------------------------
+        # General
         self.angleIncrement = 2
         self.angleIncrementMoving = 2
         self.color = (3, 207, 252)
-        #Trails
+        # Trails
         self.trailTimer = 0.01
         self.trailDuration = 0.2
         self.MinorChanges = (0, 100, True)
         self.alphaChangeDuration = (2, modAlpha)
         self.numSides = numVertices
-        #----------------------------------------------------
-
+        # ----------------------------------------------------
 
         # Random Information
-        self.centeralAngle = angle = 2 * pi / self.numSides# numPoints
+        self.centeralAngle = angle = 2 * pi / self.numSides  # numPoints
         self.radius = 20
 
         self.image = GFXDrawShape(self.numSides, self.radius, self.color)
         # self.radius = (30, 30)
 
-        #Trails
+        # Trails
         self.trailType = MotionBlurEffectTrail
-        
-
 
     def update(self, dt, TRAILS):
         totalAngleChange = self.angleIncrement*dt
@@ -65,16 +62,17 @@ class PlayerObject(object):
                 self.position[0] -= self.speed*dt
             if self.movement['RIGHT']:
                 self.position[0] += self.speed*dt
-        
+
         self.angle += totalAngleChange
-        self.image = GFXDrawShape(self.numSides, self.radius, self.color, self.angle)
-        
+        self.image = GFXDrawShape(
+            self.numSides, self.radius, self.color, self.angle)
+
         if TimeIt(self.trailTimer, self.trailStart) and movement:
             self.trailStart = perf_counter()
-            TRAILS.append(self.trailType(self.position, self.angle, self.trailDuration, 
-                                        totalAngleChange, PolyInfo=(self.numSides, self.radius, self.color), 
-                                        MinorChanges=self.MinorChanges, alphaChangeDuration=self.alphaChangeDuration))
-
+            TRAILS.append(self.trailType(self.position, self.angle, self.trailDuration,
+                                         totalAngleChange, PolyInfo=(
+                                             self.numSides, self.radius, self.color),
+                                         MinorChanges=self.MinorChanges, alphaChangeDuration=self.alphaChangeDuration))
 
     def customize(self, attributeDictionary):
         for key, item in attributeDictionary.items():
@@ -82,19 +80,11 @@ class PlayerObject(object):
 
     def trails(self):
         pass
-    
 
 
-def updateVertices(radius, angle, numPoints, position=(0,0), angleOffset=0):
+def updateVertices(radius, angle, numPoints, position=(0, 0), angleOffset=0):
     vertices = []
     for i in range(numPoints):
-        vertices.append((position[0] + radius * sin(i * (angle+angleOffset)), 
+        vertices.append((position[0] + radius * sin(i * (angle+angleOffset)),
                          position[1] + radius * cos(i * (angle+angleOffset))))
     return vertices
-
-
-
-
-
-
-
