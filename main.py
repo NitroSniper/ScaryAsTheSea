@@ -78,6 +78,10 @@ def DrawImages():
 
 
 def Game():
+    SCREEN.fill((14, 18, 36))
+    DISPLAY.blit(pygame.transform.scale(SCREEN, WINDOW_SIZE), (0, 0))
+    pygame.display.update()
+    
     start = perf_counter()
     PLAYERS = [P1, P2]
     TRAILS = []
@@ -86,7 +90,9 @@ def Game():
     surf = pygame.transform.scale(pygame.image.load('Images\ImageTemplate\Basic.png'), (120, 120))
 
     programRunning = True
-    BULLETS.append(SimpleBullet(240, 'triangleWithCore', (100,100), 0, 0, 1, 1))
+    BULLETS.append(SimpleBullet(120, 'triangleWithCore', (700,100), 0, 0, 1, 1))
+    BULLETS.append(SimpleBullet(120, 'triangleWithCore', (820,340), 0, 0, 1, 1))
+    BULLETS.append(SimpleBullet(120, 'triangleWithCore', (940,100), 0, 0, 1, 1))
     while programRunning:
         dt = (perf_counter() - start)*120
         start = perf_counter()
@@ -132,9 +138,6 @@ def Game():
 
         for bullet in BULLETS:
             SCREENRECT.append(SCREEN.blit(bullet.image, bullet.position))
-        # SCREEN.blit(GFXDrawShapes([(3, 240, (255, 255, 255), angle, 255), (3, 120, (0, 0 ,0 ), angle, 0), (4, 45, (255, 0, 0), -1*angle+90, 255)]), (400,0))
-        # SCREEN.blit(aGFXDrawShapes([(3, 240, (255, 255, 255), angle, 255), (3, 120, (0, 0 ,0 ), angle, 0), (4, 45, (255, 0, 0), -1*angle+90, 255)]), (880,0))
-        # SCREEN.blit(aGFXDrawShapes([(3, 240, (255, 255, 255), angle, 255), (3, 120, (0, 0 ,0 ), angle, 0), (4, 45, (255, 0, 0), -1*angle+90, 255)]), (640,480))
         IMG = pygame.transform.rotate(surf, angle)
        # SCREEN.blit(IMG, (800 - IMG.get_width()/2, 600 - IMG.get_height()/2))
         
@@ -146,8 +149,8 @@ def Game():
         # for rect in SCREENRECT:
         #     alist.append((rect[0]*SCREENTODISPLAYSCALAR[0],
         #                   rect[1]*SCREENTODISPLAYSCALAR[1],
-        #                   rect[2]*SCREENTODISPLAYSCALAR[0],
-        #                   rect[3]*SCREENTODISPLAYSCALAR[1]))
+        #                   rect[2]*SCREENTODISPLAYSCALAR[0]+1,
+        #                   rect[3]*SCREENTODISPLAYSCALAR[1]+1))
     
 
         # SCREEN.blit(GFXDrawShapes([(3, 160, (255, 255, 255), angle, 255)]), (400,400))

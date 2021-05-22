@@ -32,9 +32,9 @@ class PlayerObject(object):
         self.angleIncrementMoving = 2
         self.color = (3, 207, 252)
         #Trails
-        self.trailTimer = 0.1
-        self.trailDuration = 2
-        self.MinorChanges = (0, 200, True)
+        self.trailTimer = 0.01
+        self.trailDuration = 0.2
+        self.MinorChanges = (0, 100, True)
         self.alphaChangeDuration = (2, modAlpha)
         self.numSides = numVertices
         #----------------------------------------------------
