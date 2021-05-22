@@ -4,6 +4,7 @@ from time import perf_counter as perf_counter
 from math import pi
 from time import time
 from Bullets import *
+from oldPlayer import *
 from Player import *
 from engine import *
 from pygame import gfxdraw
@@ -35,7 +36,7 @@ DISPLAY = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # True Screen
 SCREEN = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 P1 = PlayerObject((K_w, K_s, K_a, K_d), K_SPACE, 4, (0, 0))
-P2 = PlayerObject((K_UP, K_DOWN, K_LEFT, K_RIGHT), K_SPACE, 4, (400, 200))
+P2 = nPlayerObject((K_UP, K_DOWN, K_LEFT, K_RIGHT), K_SPACE, 4, (400, 200))
 P1.customize({
     'angleIncrement': -1,
     'angleIncrementMoving': -4,

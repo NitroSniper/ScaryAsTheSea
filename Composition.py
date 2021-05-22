@@ -1,6 +1,6 @@
-from engine import GFXDrawShape
+from engine import GFXDrawShape, TrigVectors
 from time import perf_counter
-from math import pi
+from math import pi, sin
 
 
 def sinAlpha(alpha, alphaLimit, reverse, dif, normalWaveLenth, midDif):
@@ -15,17 +15,18 @@ def modAlpha(alpha, alphaLimit, reverse, dif, *args):  # arg0 = lower arg1 = upp
     return alphaLimit[0] + alpha % (dif)
 
 
-class Point(object):
+class PointObject(object):
     def __init__(self, position, velocity, angle):
         self.position = position
         self.velocity = velocity
         self.angle = angle
 
-    def update():
-        pass
+    def update(self, dt):
+        self.position = TrigVectors(self.angle, self.velocity, self.position, dt)
+        
 
 
-class PolygonInformation(object):
+class PolygonInformationObject(object):
     def __init__(self, verticesNum, radius, color, alphaLimit, alphaShiftDuration, rotation, rotationIncrement, alphaFunc=modAlpha, alphaReverse=False):
         self.verticesNum = verticesNum
         self.radius = radius
@@ -40,7 +41,8 @@ class PolygonInformation(object):
         self.rotationIncrement = rotationIncrement
 
         self.alphaDifference = alphaLimit[1] - alphaLimit[0]
-        self.alphaWaveLength = 2*pi/self.alphaDifference
+        self.alphaDifference = self.alphaDifference if self.alphaDifference else 1
+        self.alphaWaveLength = 2*pi/self.alphaDifference 
         self.meanInAlphaLimit = (self.alphaLimit[0] + self.alphaLimit[1])/2
 
         self.alpha = 0
@@ -50,10 +52,12 @@ class PolygonInformation(object):
         self.image = GFXDrawShape(
             self.verticesNum, self.radius, self.color, self.rotation, self.IMGAlpha)
 
-    def update(self, dt):
+    def update(self, dt, externalRotationInc=0, externalRotation=0):
         self.alpha = (perf_counter() - self.start) / \
             self.alphaShiftDuration*self.alphaDifference
         self.IMGAlpha = self.alphaOverflowFunc(
             self.alpha, self.alphaLimit, self.alphaReverse, self.alphaDifference, self.alphaWaveLength, self.meanInAlphaLimit)
 
-        self.rotation = self.rotationIncrement*dt
+        self.rotation += (self.rotationIncrement+externalRotationInc)*dt
+        self.image = GFXDrawShape(
+            self.verticesNum, self.radius, self.color, externalRotation+self.rotation, self.IMGAlpha)
