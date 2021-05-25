@@ -93,14 +93,29 @@ class PolygonInformationObject(object):
 
 
 
-def ChangesClass(object):
-    def __init__(self, DictSentThrough):
-        for key, item in DictSentThrough.items():
-            setattr(self, key, item)
+class ChangesClass(object):
+    def __init__(self, attributes, target):
+        self.target = target
+        self.attributes = attributes
+        self.update()
+
     def update(self):
-        pass
-    def returnValues(self):
-        return ()
+        # This Code is used to make it so that if we have polygon.rotation, 
+        # it will search the polygon object then search for rotation
+        for key in self.attributes:
+            foo = self.target
+            attributesChain = key.split('.')
+            for attr in attributesChain:
+                foo = getattr(foo, attr) 
+
+            setattr(self, key, foo)
+        print (self.__dict__)
+    def returnValues(self, dict):
+        self.update()
+        foo = {}
+        for attr in self.attributes:
+            foo[attr] = getattr(self, attr) 
+        return dict | foo
 
 
 
@@ -112,10 +127,8 @@ class TrailInformationObject(object):
         self.spawnStart = perf_counter()
         self.trailObject = trailObject
         self.target = target      #target is what we get the copy of
-        self.changes = {
-            'RotationIncrement' : target.angleChanges
-        }
-        self.changeObject = None
+        self.changes = ('polygon.rotation',)
+        self.changeObject = ChangesClass(self.changes, target)
     def update(self, TRAILS, ExternalChange=0):
         
         if TimeIt(self.timerDuration, self.spawnStart):
