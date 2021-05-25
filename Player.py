@@ -1,5 +1,6 @@
 import pygame
 from Composition import *
+from Trails import *
 
 
 
@@ -20,15 +21,17 @@ class nPlayerObject(object):
         self.position = list(pos)
         self.angle = 0
         self.speed = DEFAULT_SPEED
-        
+        self.angleChanges = 0
         # self.polygon = PolygonInformationObject(vertices, 20, (255, 255, 255), (100, 255), 2, 0, 1, sinAlpha)
-        self.polygon = PolygonInformationObject(vertices, 20, (3, 207, 252), (255, 255), 1, 0, 1, sinAlpha)
+        self.polygon = PolygonInformationObject(vertices, 20, (3, 207, 252), (255, 255), 1, 0, 1)
+
+
+        self.trail = TrailInformationObject(MotionBlurTrail, timerDuration=2, spawnTimer=10, target=self)
     def update(self, dt, TRAILS):
-        
-        angle = 0
+        self.angleChanges = 0
         movement = any(move == True for move in self.movement.values())
         if movement:
-            angle += 5
+            self.angleChanges += 5
             if self.movement['UP']:
                 self.position[1] -= self.speed*dt
             if self.movement['DOWN']:
@@ -38,5 +41,6 @@ class nPlayerObject(object):
             if self.movement['RIGHT']:
                 self.position[0] += self.speed*dt
         
-        self.polygon.update(dt, externalRotationInc=angle)
+        self.polygon.update(dt, externalRotationInc=self.angleChanges)
+        self.trail.update(TRAILS)
         self.image = self.polygon.image

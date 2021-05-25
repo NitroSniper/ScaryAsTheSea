@@ -32,7 +32,7 @@ def TimeIt(duration, start, compensation=0):
     return perf_counter() - (start+compensation) > duration
 
 
-def TrigVectors(angle, velocity, position, dt=1):
+def TrigVectors(angle, velocity, position, dt=1): 
     rad = radians(angle)
     position[0] += cos(rad)*velocity*dt
     position[1] += sin(rad)*velocity*dt

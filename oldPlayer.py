@@ -1,7 +1,7 @@
 import pygame
 from math import sin, cos, pi, radians
 from engine import GFXDrawShape, TimeIt
-from Trails import *
+from oldTrails import *
 DEFAULT_SPEED = 5
 DEFAULT_LIVES = 3
 DEFAULT_ANGLE = 3

@@ -102,7 +102,6 @@ def Game():
         dt = (perf_counter() - start)*120
         start = perf_counter()
         lstart = perf_counter()
-        angle += 0.9*dt
 
         for event in pygame.event.get():
             for keyState, value in PLAYERLOOPORDER:
@@ -118,6 +117,9 @@ def Game():
 
         l1.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
+
+
+        #Game Update
         for player in PLAYERS:
             player.update(dt, TRAILS)
 
@@ -128,22 +130,21 @@ def Game():
 
         l2.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
+
+
+
         # Drawing
         SCREENRECT = []
         SCREEN.fill((14, 18, 36))
 
         for trail in TRAILS:
             SCREENRECT.append(SCREEN.blit(trail.image, trail.position))
+
         for player in PLAYERS:
-            # RotationBlit(SCREEN, player.image, player.position, player.angle)
-            # gfxdraw.aapolygon(SCREEN, player.vertices, (0,255,0))
-            # RotationBlit(SCREEN, player.image, player.position, player.angle)
             SCREENRECT.append(SCREEN.blit(player.image, player.position))
 
         for bullet in BULLETS:
             SCREENRECT.append(SCREEN.blit(bullet.image, bullet.position))
-        IMG = pygame.transform.rotate(surf, angle)
-       # SCREEN.blit(IMG, (800 - IMG.get_width()/2, 600 - IMG.get_height()/2))
 
         l3.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
@@ -166,7 +167,8 @@ def Game():
         pygame.display.update()
         l4.append(1/(perf_counter()-lstart))
         displayframe.append(1/(perf_counter()-start))
-        # programRunning = False
+    
+    
     print(f'''
                Event Handler: {mean(l1)}
                Update Handler: {mean(l2)}
