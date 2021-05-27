@@ -4,7 +4,6 @@ from time import perf_counter as perf_counter
 from math import pi
 from time import time
 from Bullets import *
-from oldPlayer import *
 from Player import *
 from engine import *
 from pygame import gfxdraw
@@ -22,10 +21,10 @@ from pygame.locals import (
     K_DOWN,
     K_RIGHT,
     K_LEFT,
-    K_j,
-    K_k,
-    K_l,
-    K_i
+    # K_j,
+    # K_k,
+    # K_l,
+    # K_i
 )
 
 SCREEN_WIDTH = 1920*1
@@ -39,20 +38,9 @@ DISPLAY = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # True Screen
 # Screen to Blit on other Screen
 SCREEN = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-P1 = PlayerObject((K_w, K_s, K_a, K_d), K_SPACE, 4, (300, 200))
-P2 = nPlayerObject((K_UP, K_DOWN, K_LEFT, K_RIGHT), K_SPACE, 4, (400, 200))
-P3 = nPlayerObject((K_i, K_k, K_j, K_l), K_SPACE, 4, (0, 0))
-P1.customize({
-    'angleIncrement': -1,
-    'angleIncrementMoving': -4,
-    'color': (110, 1, 95),
-    'trailDuration': 1,
-    'trailTimer': 0.01,
-    'MinorChanges': (0, 150, False),
-    'alphaChangeDuration': (0.5, sinAlpha),
-    'numSides': 5
+P2 = PlayerObject((K_UP, K_DOWN, K_LEFT, K_RIGHT), K_SPACE, 4, (400, 200))
+P1 = PlayerObject((K_w, K_s, K_a, K_d), K_SPACE, 4, (0, 0))
 
-})
 
 # {
 #             'verticesNum' : vertices,
@@ -69,7 +57,7 @@ changes = {
 
 }
 
-P3.polygon.edit(changes)
+P1.polygon.edit(changes)
 
 # {
 #             'trailObject' : MotionBlurTrail,
@@ -90,7 +78,7 @@ changes = {
 }
 
 
-P3.trail.edit(changes)
+P1.trail.edit(changes)
 
 
 # P2.customize({
@@ -127,20 +115,19 @@ def Game():
     pygame.display.update()
 
     start = perf_counter()
-    PLAYERS = [P1, P2, P3]
+    PLAYERS = [P1, P2]
     TRAILS = []
     BULLETS = []
-    angle = 0
-    surf = pygame.transform.scale(pygame.image.load(
-        'Images\ImageTemplate\Basic.png'), (120, 120))
 
-    programRunning = True
     BULLETS.append(SimpleBullet(
         120, 'triangleWithCore', (700, 100), 0, 0, 1, 1))
     BULLETS.append(SimpleBullet(
         120, 'triangleWithCore', (820, 340), 0, 0, 1, 1))
     BULLETS.append(SimpleBullet(
-        120, 'triangleWithCore', (940, 100), 0, 0, 1, 1))
+        30, 'triangleWithCore', (940, 100), 0, 0, 1, 1))
+
+    
+    programRunning = True
     while programRunning:
         dt = (perf_counter() - start)*120
         start = perf_counter()

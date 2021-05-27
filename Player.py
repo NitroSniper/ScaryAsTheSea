@@ -12,7 +12,7 @@ SIZE = 20
 # https://stackoverflow.com/questions/3436453/calculate-coordinates-of-a-regular-polygons-vertices
 
 
-class nPlayerObject(object):
+class PlayerObject(object):
     def __init__(self, moveSetKey, dashKey, vertices, pos):
         self.moveSet = moveSetKey
         self.movement = {'UP': False, 'DOWN': False,

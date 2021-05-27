@@ -105,7 +105,6 @@ class PolygonInformationObject(object):
         for key, item in argsAsDict.items():
             self.args[key] = item
         self.__init__(**self.args)
-        print ('yes i got here')
 
 
 class TrailInformationObject(object):
