@@ -1,3 +1,4 @@
+
 from time import perf_counter
 from engine import TimeIt
 #this is used as the actual Trail
