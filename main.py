@@ -21,7 +21,11 @@ from pygame.locals import (
     K_UP,
     K_DOWN,
     K_RIGHT,
-    K_LEFT
+    K_LEFT,
+    K_j,
+    K_k,
+    K_l,
+    K_i
 )
 
 SCREEN_WIDTH = 1920*1
@@ -35,8 +39,9 @@ DISPLAY = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # True Screen
 # Screen to Blit on other Screen
 SCREEN = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-P1 = PlayerObject((K_w, K_s, K_a, K_d), K_SPACE, 4, (0, 0))
+P1 = PlayerObject((K_w, K_s, K_a, K_d), K_SPACE, 4, (300, 200))
 P2 = nPlayerObject((K_UP, K_DOWN, K_LEFT, K_RIGHT), K_SPACE, 4, (400, 200))
+P3 = nPlayerObject((K_i, K_k, K_j, K_l), K_SPACE, 4, (0, 0))
 P1.customize({
     'angleIncrement': -1,
     'angleIncrementMoving': -4,
@@ -48,6 +53,44 @@ P1.customize({
     'numSides': 5
 
 })
+
+# {
+#             'verticesNum' : vertices,
+#             'radius' : 20,
+#             'color' : (3, 207, 252),
+#             'alphaLimit' : (255, 255),
+#             'alphaShiftDuration' : 1,
+#             'rotation' : 0,
+#             'rotationIncrement' : 1}
+
+changes = {
+    'color' : (110, 1, 95),
+    'verticesNum' : 5
+
+}
+
+P3.polygon.edit(changes)
+
+# {
+#             'trailObject' : MotionBlurTrail,
+#             'timerDuration' : 0.05,
+#             'spawnTimer' : 1,
+#             'target' : self
+#         }
+
+polychange = {
+    'alphaLimit' : (0, 150),
+    'alphaShiftDuration' : 0.5,
+    'alphaOverflowFunc' : sinAlpha
+
+}
+changes = {
+    'timerDuration' : 0.01,
+    'changesToPolygon' : polychange
+}
+
+
+P3.trail.edit(changes)
 
 
 # P2.customize({
@@ -84,7 +127,7 @@ def Game():
     pygame.display.update()
 
     start = perf_counter()
-    PLAYERS = [P1, P2]
+    PLAYERS = [P1, P2, P3]
     TRAILS = []
     BULLETS = []
     angle = 0

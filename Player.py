@@ -22,16 +22,33 @@ class nPlayerObject(object):
         self.angle = 0
         self.speed = DEFAULT_SPEED
         self.angleChanges = 0
+        self.movementAngle = 6
         # self.polygon = PolygonInformationObject(vertices, 20, (255, 255, 255), (100, 255), 2, 0, 1, sinAlpha)
-        self.polygon = PolygonInformationObject(vertices, 20, (3, 207, 252), (255, 255), 1, 0, 1)
+        self.polygonArguments = {
+            'verticesNum' : vertices,
+            'radius' : 20,
+            'color' : (3, 207, 252),
+            'alphaLimit' : (255, 255),
+            'alphaShiftDuration' : 1,
+            'rotation' : 0,
+            'rotationIncrement' : 1}
+        self.polygon = PolygonInformationObject(**self.polygonArguments)
 
 
-        self.trail = TrailInformationObject(MotionBlurTrail, timerDuration=2, spawnTimer=10, target=self)
+        self.trailArguments = {
+            'trailObject' : MotionBlurTrail,
+            'timerDuration' : 0.05,
+            'spawnTimer' : 1,
+            'target' : self,
+            'changesToPolygon' : {'rotationIncrement' : self.movementAngle, 'alphaLimit' : (0, 255), 'alphaShiftDuration' : 1, 'alphaOverflowFunc' : sinAlpha}
+        }
+
+        self.trail = TrailInformationObject(**self.trailArguments)
     def update(self, dt, TRAILS):
         self.angleChanges = 0
-        movement = any(move == True for move in self.movement.values())
-        if movement:
-            self.angleChanges += 5
+        self.isMovement = any(move == True for move in self.movement.values())
+        if self.isMovement:
+            self.angleChanges += self.movementAngle
             if self.movement['UP']:
                 self.position[1] -= self.speed*dt
             if self.movement['DOWN']:

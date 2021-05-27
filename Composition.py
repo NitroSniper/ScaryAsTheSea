@@ -30,13 +30,26 @@ class PointObject(object):
 
 
 class PolygonInformationObject(object):
-    def __init__(self, verticesNum, radius, color, alphaLimit, alphaShiftDuration, rotation, rotationIncrement, alphaFunc=modAlpha, alphaReverse=False):
+    def __init__(self, verticesNum, radius, color, alphaLimit, alphaShiftDuration, rotation, rotationIncrement, alphaOverflowFunc=modAlpha, alphaReverse=False):
+        self.args = {
+            'verticesNum' : verticesNum,
+            'radius' : radius,
+            'color' : color,
+            'alphaLimit' : alphaLimit,
+            'alphaShiftDuration' : alphaShiftDuration,
+            'rotation' : rotation,
+            'rotationIncrement' : rotationIncrement,
+            'alphaOverflowFunc' : alphaOverflowFunc, 
+            'alphaReverse' : alphaReverse
+            }
+        
+        
         self.verticesNum = verticesNum
         self.radius = radius
         self.color = color
         self.alphaLimit = alphaLimit
         self.alphaShiftDuration = alphaShiftDuration
-        self.alphaOverflowFunc = alphaFunc
+        self.alphaOverflowFunc = alphaOverflowFunc
         self.start = perf_counter()
         self.alphaReverse = alphaReverse
 
@@ -80,7 +93,7 @@ class PolygonInformationObject(object):
             'alphaShiftDuration' : self.alphaShiftDuration,
             'rotation' : self.rotation,
             'rotationIncrement' : self.rotationIncrement,
-            'alphaOverFlowFunc' : self.alphaOverflowFunc, 
+            'alphaOverflowFunc' : self.alphaOverflowFunc, 
             'alphaReverse' : self.alphaReverse}
         
 
@@ -88,63 +101,54 @@ class PolygonInformationObject(object):
             # setattr(object, key, item)
             args[key] = item
         return PolygonInformationObject(*args.values())
+    def edit(self, argsAsDict):
+        for key, item in argsAsDict.items():
+            self.args[key] = item
+        self.__init__(**self.args)
+        print ('yes i got here')
 
 
-
-
-
-class ChangesClass(object):
-    def __init__(self, attributes, target):
-        self.target = target
-        self.attributes = attributes
-        self.update()
-
-    def update(self):
-        # This Code is used to make it so that if we have polygon.rotation, 
-        # it will search the polygon object then search for rotation
-        for key in self.attributes:
-            foo = self.target
-            attributesChain = key.split('.')
-            for attr in attributesChain:
-                foo = getattr(foo, attr) 
-
-            setattr(self, key, foo)
-        print (self.__dict__)
-    def returnValues(self, dict):
-        self.update()
-        foo = {}
-        for attr in self.attributes:
-            foo[attr] = getattr(self, attr) 
-        return dict | foo
-
-
-
-#This is just used as a Trail Control Timer Object
 class TrailInformationObject(object):
-    def __init__(self, trailObject, timerDuration, spawnTimer, target):
+    def __init__(self, trailObject, timerDuration, spawnTimer, target, changesToPolygon): #remember to change args if changing arg here
+        self.args = {
+            'trailObject' : trailObject,
+            'timerDuration' : timerDuration,
+            'spawnTimer' : spawnTimer,
+            'target' : target,
+            'changesToPolygon' : changesToPolygon
+        }
+
+
+
         self.timerDuration = timerDuration #timerDuration is how long the bullet
         self.spawnTimer = spawnTimer
         self.spawnStart = perf_counter()
         self.trailObject = trailObject
         self.target = target      #target is what we get the copy of
-        self.changes = ('polygon.rotation',)
-        self.changeObject = ChangesClass(self.changes, target)
+        
+        
+        #This eval is redundant but keeping it if I come across value which is changing 
+        
+        #expression = "{'rotationIncrement' : target.movementAngle, 'alphaLimit' : (0, 255), 'alphaShiftDuration' : 1, 'alphaOverFlowFunc' : sinAlpha}"
+        #self.changesUpdate = eval('lambda target: ' + expression)
+
+        self.changesToPolygon = changesToPolygon
     def update(self, TRAILS, ExternalChange=0):
         
-        if TimeIt(self.timerDuration, self.spawnStart):
+        if TimeIt(self.timerDuration, self.spawnStart) and self.target.isMovement:
             self.spawnStart = perf_counter()
             
             
-            self.changes = {
-            'rotationIncrement' : self.target.angleChanges+self.target.polygon.rotationIncrement,
-            'alphaLimit' : (0, 255),
-            'alphaShiftDuration' : 2
-            }
-
+            #self.changes = self.changesUpdate(self.target)
+            
             # self.changeObject.update()
 
-            TRAILS.append(self.trailObject('foo', point=PointObject(self.target.position[:], 0, 0), polygon=self.target.polygon.copyAndEdit(self.changes), killTimer=self.spawnTimer))
+            TRAILS.append(self.trailObject('foo', point=PointObject(self.target.position[:], 0, 0), polygon=self.target.polygon.copyAndEdit(self.changesToPolygon), killTimer=self.spawnTimer))
             # self.trailObject() 
+    def edit(self, argsAsDict):
+        for key, item in argsAsDict.items():
+            self.args[key] = item
+        self.__init__(**self.args)
 
 
 
