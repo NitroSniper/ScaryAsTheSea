@@ -1,7 +1,10 @@
+
 import pygame
-from math import sin, cos, pi, radians
-from engine import GFXDrawShape, TimeIt
+from Composition import *
 from Trails import *
+
+
+
 DEFAULT_SPEED = 5
 DEFAULT_LIVES = 3
 DEFAULT_ANGLE = 3
@@ -9,54 +12,44 @@ SIZE = 20
 # https://stackoverflow.com/questions/67168804/how-to-make-a-circular-countdown-timer-in-pygame
 # https://stackoverflow.com/questions/3436453/calculate-coordinates-of-a-regular-polygons-vertices
 
+
 class PlayerObject(object):
-    def __init__(self, moveSetKey, dashKey, numVertices, position):
+    def __init__(self, moveSetKey, dashKey, vertices, pos):
         self.moveSet = moveSetKey
-
-        self.position = list(position)
-        self.angle = 0
-        self.speed = DEFAULT_SPEED
-
-        # dashing = DashClassObject()
-
-        # moveSetKey should be up, down, left, right, dash
         self.movement = {'UP': False, 'DOWN': False,
                          'LEFT': False, 'RIGHT': False}
-        self.trailStart = perf_counter()
+
+        self.position = list(pos)
+        self.angle = 0
+        self.speed = DEFAULT_SPEED
+        self.angleChanges = 0
+        self.movementAngle = 6
+        # self.polygon = PolygonInformationObject(vertices, 20, (255, 255, 255), (100, 255), 2, 0, 1, sinAlpha)
+        self.polygonArguments = {
+            'verticesNum' : vertices,
+            'radius' : 20,
+            'color' : (3, 207, 252),
+            'alphaLimit' : (255, 255),
+            'alphaShiftDuration' : 1,
+            'rotation' : 0,
+            'rotationIncrement' : 1}
+        self.polygon = PolygonInformationObject(**self.polygonArguments)
 
 
-        #Customizable
-        #----------------------------------------------------
-        #General
-        self.angleIncrement = 2
-        self.angleIncrementMoving = 2
-        self.color = (3, 207, 252)
-        #Trails
-        self.trailTimer = 0.01
-        self.trailDuration = 0.2
-        self.MinorChanges = (0, 100, True)
-        self.alphaChangeDuration = (2, modAlpha)
-        self.numSides = numVertices
-        #----------------------------------------------------
+        self.trailArguments = {
+            'trailObject' : MotionBlurTrail,
+            'timerDuration' : 0.05,
+            'spawnTimer' : 1,
+            'target' : self,
+            'changesToPolygon' : {'rotationIncrement' : self.movementAngle, 'alphaLimit' : (0, 255), 'alphaShiftDuration' : 1, 'alphaOverflowFunc' : sinAlpha}
+        }
 
-
-        # Random Information
-        self.centeralAngle = angle = 2 * pi / self.numSides# numPoints
-        self.radius = 20
-
-        self.image = GFXDrawShape(self.numSides, self.radius, self.color)
-        # self.radius = (30, 30)
-
-        #Trails
-        self.trailType = MotionBlurEffectTrail
-        
-
-
+        self.trail = TrailInformationObject(**self.trailArguments)
     def update(self, dt, TRAILS):
-        totalAngleChange = self.angleIncrement*dt
-        movement = any(move == True for move in self.movement.values())
-        if movement:
-            totalAngleChange += self.angleIncrementMoving*dt
+        self.angleChanges = 0
+        self.isMovement = any(move == True for move in self.movement.values())
+        if self.isMovement:
+            self.angleChanges += self.movementAngle
             if self.movement['UP']:
                 self.position[1] -= self.speed*dt
             if self.movement['DOWN']:
@@ -66,35 +59,6 @@ class PlayerObject(object):
             if self.movement['RIGHT']:
                 self.position[0] += self.speed*dt
         
-        self.angle += totalAngleChange
-        self.image = GFXDrawShape(self.numSides, self.radius, self.color, self.angle)
-        
-        if TimeIt(self.trailTimer, self.trailStart) and movement:
-            self.trailStart = perf_counter()
-            TRAILS.append(self.trailType(self.position, self.angle, self.trailDuration, 
-                                        totalAngleChange, PolyInfo=(self.numSides, self.radius, self.color), 
-                                        MinorChanges=self.MinorChanges, alphaChangeDuration=self.alphaChangeDuration))
-
-
-    def customize(self, attributeDictionary):
-        for key, item in attributeDictionary.items():
-            setattr(self, key, item)
-
-    def trails(self):
-        pass
-    
-
-
-def updateVertices(radius, angle, numPoints, position=(0,0), angleOffset=0):
-    vertices = []
-    for i in range(numPoints):
-        vertices.append((position[0] + radius * sin(i * (angle+angleOffset)), 
-                         position[1] + radius * cos(i * (angle+angleOffset))))
-    return vertices
-
-
-
-
-
-
-
+        self.polygon.update(dt, externalRotationInc=self.angleChanges)
+        self.trail.update(TRAILS)
+        self.image = self.polygon.image
