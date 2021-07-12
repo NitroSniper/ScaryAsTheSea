@@ -1,13 +1,10 @@
-
-
 from statistics import mean
 from time import perf_counter as perf_counter
-from math import pi
-from time import time
-from Bullets import *
+from oldBullets import *
+from oldPlayer import *
 from Player import *
 from engine import *
-from pygame import gfxdraw
+from Bullets import *
 from pygame.locals import (
     QUIT,
     K_ESCAPE,
@@ -39,8 +36,8 @@ DISPLAY = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # True Screen
 # Screen to Blit on other Screen
 SCREEN = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-P2 = PlayerObject((K_UP, K_DOWN, K_LEFT, K_RIGHT), K_SPACE, 4, (400, 200))
-P1 = PlayerObject((K_w, K_s, K_a, K_d), K_SPACE, 4, (0, 0))
+P2 = PlayerObjectN((K_UP, K_DOWN, K_LEFT, K_RIGHT), K_SPACE, 4, (400, 200))
+P1 = PlayerObjectN((K_w, K_s, K_a, K_d), K_SPACE, 4, (0, 0))
 
 
 # {
@@ -52,13 +49,13 @@ P1 = PlayerObject((K_w, K_s, K_a, K_d), K_SPACE, 4, (0, 0))
 #             'rotation' : 0,
 #             'rotationIncrement' : 1}
 
-changes = {
-    'color' : (110, 1, 95),
-    'verticesNum' : 5
+changes = ({
+    'color': (110, 1, 95),
+    'verticesNum': 5
 
-}
+},)
 
-P1.polygon.edit(changes)
+P1.polygon.editSelf(changes)
 
 # {
 #             'trailObject' : MotionBlurTrail,
@@ -67,15 +64,16 @@ P1.polygon.edit(changes)
 #             'target' : self
 #         }
 
-polychange = {
-    'alphaLimit' : (0, 150),
-    'alphaShiftDuration' : 0.5,
-    'alphaOverflowFunc' : sinAlpha
+polychange = ({
+    'alphaLimit': (0, 150),
+    'alphaShiftDuration': 0.5,
+    'alphaOverflowFunc': sinAlpha
 
-}
+},)
 changes = {
-    'timerDuration' : 0.01,
-    'changesToPolygon' : polychange
+    'timerDuration': 0.01,
+    'spawnTimer': 1,
+    'changesToPolygon': polychange
 }
 
 
@@ -126,8 +124,8 @@ def Game():
         120, 'triangleWithCore', (820, 340), 0, 0, 1, 1))
     BULLETS.append(SimpleBullet(
         30, 'triangleWithCore', (940, 100), 0, 0, 1, 1))
+    BULLETS.append(SimpleBulletN(10, (950, 670), 0, 0, 'triangleWithCore'))
 
-    
     programRunning = True
     while programRunning:
         dt = (perf_counter() - start)*120
@@ -149,8 +147,7 @@ def Game():
         l1.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
 
-
-        #Game Update
+        # Game Update
         for player in PLAYERS:
             player.update(dt, TRAILS)
 
@@ -161,8 +158,6 @@ def Game():
 
         l2.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
-
-
 
         # Drawing
         SCREENRECT = []
@@ -198,8 +193,7 @@ def Game():
         pygame.display.update()
         l4.append(1/(perf_counter()-lstart))
         displayframe.append(1/(perf_counter()-start))
-    
-    
+
     print(f'''
                Event Handler: {mean(l1)}
                Update Handler: {mean(l2)}
@@ -212,3 +206,4 @@ def Game():
 
 if __name__ == '__main__':
     Game()
+    pygame.quit()

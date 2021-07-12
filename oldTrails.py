@@ -2,11 +2,7 @@
 from time import perf_counter
 from engine import TimeIt
 from random import randint
-
 #this is used as the actual Trail
-
-
-
 
 class TrailObject(object):
     def __init__(self, point, polygon, killTimer):
