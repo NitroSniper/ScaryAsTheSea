@@ -1,10 +1,11 @@
+from engine import TimeIt
+import pygame
 from statistics import mean
 from time import perf_counter as perf_counter
-from oldBullets import *
-from oldPlayer import *
-from Player import *
-from engine import *
-from Bullets import *
+from Player import PlayerObject
+from Bullets import SimpleBullet, Bullets
+from random import randint
+from Composition import GameListPointers, sinAlpha, modAlpha, maxAlpha
 from pygame.locals import (
     QUIT,
     K_ESCAPE,
@@ -25,6 +26,10 @@ from pygame.locals import (
     # K_i
 )
 
+
+
+
+
 SCREEN_WIDTH = 1920*1
 SCREEN_HEIGHT = 1080*1
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -36,8 +41,8 @@ DISPLAY = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # True Screen
 # Screen to Blit on other Screen
 SCREEN = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-P2 = PlayerObjectN((K_UP, K_DOWN, K_LEFT, K_RIGHT), K_SPACE, 4, (400, 200))
-P1 = PlayerObjectN((K_w, K_s, K_a, K_d), K_SPACE, 4, (0, 0))
+P2 = PlayerObject((K_UP, K_DOWN, K_LEFT, K_RIGHT), K_SPACE, 4, (400, 200))
+P1 = PlayerObject((K_w, K_s, K_a, K_d), K_SPACE, 4, (0, 0))
 
 
 # {
@@ -115,18 +120,21 @@ def Game():
 
     start = perf_counter()
     PLAYERS = [P1, P2]
-    TRAILS = []
-    BULLETS = []
+    GameListPointers.PLAYERS = PLAYERS
+    TRAILS = GameListPointers.TRAILS
+    BULLETS = GameListPointers.BULLETS
 
-    BULLETS.append(SimpleBullet(
-        120, 'triangleWithCore', (700, 100), 0, 0, 1, 1))
-    BULLETS.append(SimpleBullet(
-        120, 'triangleWithCore', (820, 340), 0, 0, 1, 1))
-    BULLETS.append(SimpleBullet(
-        30, 'triangleWithCore', (940, 100), 0, 0, 1, 1))
-    BULLETS.append(SimpleBulletN(10, (950, 670), 0, 0, 'triangleWithCore'))
-
+    # BULLETS.append(SimpleBullet(
+    #     120, 'triangleWithCore', (700, 100), 0, 0, 1, 1))
+    # BULLETS.append(SimpleBullet(
+    #     120, 'triangleWithCore', (820, 340), 0, 0, 1, 1))
+    # BULLETS.append(SimpleBullet(
+    #     30, 'triangleWithCore', (940, 100), 0, 0, 1, 1))
+    for n in range(10):
+        SimpleBullet(10, (120*n, 670), 0, 240, 'triangleWithCore')
+    screenOffset = [0,0]
     programRunning = True
+    shake = perf_counter()
     while programRunning:
         dt = (perf_counter() - start)*120
         start = perf_counter()
@@ -149,12 +157,40 @@ def Game():
 
         # Game Update
         for player in PLAYERS:
-            player.update(dt, TRAILS)
-
+            player.update(dt)
         for trail in TRAILS:
-            trail.update(dt, TRAILS)
+            trail.update(dt)
         for bullet in BULLETS:
             bullet.update(dt)
+
+
+        #Recode this better!!!!!!!
+        if screenOffset != [0,0]:
+            if screenOffset[0] > 0:
+                if screenOffset[0] < 1:
+                    screenOffset[0] = 0
+                else:
+                    screenOffset[0] -= 1*dt
+            elif screenOffset[0] < 0:
+                if screenOffset[0] > -1:
+                    screenOffset[0] = 0
+                else:
+                    screenOffset[0] += 1*dt
+            if screenOffset[1] > 0:
+                if screenOffset[1] < 1:
+                    screenOffset[1] = 0
+                else:
+                    screenOffset[1] -= 1*dt
+            elif screenOffset[1] < 0:
+                if screenOffset[1] > -1:
+                    screenOffset[1] = 0
+                else:
+                    screenOffset[1] += 1*dt
+
+        if TimeIt(0.5, shake):
+            shake = perf_counter()
+            #screenOffset = [0, 10]
+
 
         l2.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
@@ -166,11 +202,12 @@ def Game():
         for trail in TRAILS:
             SCREENRECT.append(SCREEN.blit(trail.image, trail.position))
 
+        for bullet in BULLETS:
+            SCREENRECT.append(SCREEN.blit(bullet.image, bullet.position))
+        
         for player in PLAYERS:
             SCREENRECT.append(SCREEN.blit(player.image, player.position))
 
-        for bullet in BULLETS:
-            SCREENRECT.append(SCREEN.blit(bullet.image, bullet.position))
 
         l3.append(1/(perf_counter()-lstart))
         lstart = perf_counter()
@@ -186,10 +223,10 @@ def Game():
         #SCREEN.blit(GFXDrawShapes([(3, 40, (255, 255, 255), 0, 255), (3, 20, (0, 0 ,0 ), 0, 0)]), (600,400))
 
         if not HDMode:
-            DISPLAY.blit(pygame.transform.scale(SCREEN, WINDOW_SIZE), (0, 0))
+            DISPLAY.blit(pygame.transform.scale(SCREEN, WINDOW_SIZE), screenOffset)
         else:
             DISPLAY.blit(pygame.transform.smoothscale(
-                SCREEN, WINDOW_SIZE), (0, 0))
+                SCREEN, WINDOW_SIZE), screenOffset)
         pygame.display.update()
         l4.append(1/(perf_counter()-lstart))
         displayframe.append(1/(perf_counter()-start))

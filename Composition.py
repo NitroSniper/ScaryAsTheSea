@@ -1,12 +1,11 @@
-from Trails import TrailObject
-from engine import GFXDrawShape, GFXDrawShapes, TrigVectors, TimeIt
+from engine import GFXDrawShapes, TrigVectors, TimeIt
 from time import perf_counter
 from math import pi, sin
 
 TEMPLATEPOLYGON = {'triangleWithCore': ((3, 1, (255, 255, 255), 1, 255), (3, 0.5, (0, 0, 0), 1, 0), (4, 0.1875, (255, 0, 0), -1, 255))}
 TEMPLATEPOLYGON = {'triangleWithCore':({
             'verticesNum': 3,
-            'radius': 120,
+            'radius': 1,
             'color': (255, 255, 255),
             'alphaLimit': (255, 255),
             'alphaShiftDuration': 1,
@@ -14,7 +13,7 @@ TEMPLATEPOLYGON = {'triangleWithCore':({
             'rotationIncrementSpeed': 0},
             {
             'verticesNum': 3,
-            'radius': 60,
+            'radius': 0.5,
             'color': (0, 0, 0),
             'alphaLimit': (0, 0),
             'alphaShiftDuration': 1,
@@ -22,7 +21,7 @@ TEMPLATEPOLYGON = {'triangleWithCore':({
             'rotationIncrementSpeed': 0},
             {
             'verticesNum': 4,
-            'radius': 22.5,
+            'radius': 0.1875,
             'color': (255, 0, 0),
             'alphaLimit': (255, 255),
             'alphaShiftDuration': 1,
@@ -30,6 +29,28 @@ TEMPLATEPOLYGON = {'triangleWithCore':({
             'rotationIncrementSpeed': 0})}
 
 # https://stackoverflow.com/questions/12467570/python-way-to-speed-up-a-repeatedly-executed-eval-statement
+
+
+class GameListPointers(object): #This class is used to stop passing through list pointers
+    PLAYERS = None
+    BULLETS = []
+    TRAILS = []
+    PARTICLES = []
+
+
+
+
+def TemplateMaker(name, size=1, rotationSpeed=1):
+
+    tupleWithDict = TEMPLATEPOLYGON[name]
+    foo = []
+    for adictOriginal in tupleWithDict:
+        adict = adictOriginal.copy()
+        adict['radius'] *= size
+        adict['rotationSpeed'] *= rotationSpeed
+        foo.append(adict)
+    return tuple(foo)
+
 
 
 def sinAlpha(alpha, alphaLimit, reverse, dif, normalWaveLenth, midDif):
@@ -57,7 +78,7 @@ def maxAlpha(alpha, alphaLimit, reverse, dif, *args):
 
 
 class PointObject(object):
-    def __init__(self, position, velocity, angle):
+    def __init__(self, position: tuple, velocity: int, angle: int):
         self.position = list(position)
         self.velocity = velocity
         self.angle = angle
@@ -83,15 +104,15 @@ class PolygonOverviewObject(object):
 
         self.polygonCount = len(TupleOfPolygonObjectArgs)
         self.rotation = currentRotation
-        shapeArguments = tuple([polygon.giveGFXDrawArgument(1, self.rotation)
+        shapeArguments = tuple([polygon.giveGFXDrawArgument(1, self.rotation, 1)
                                for polygon in self.polygons.values()])
         self.image = GFXDrawShapes(shapeArguments)
         self.lastRotationIncrease = 0
 
-    def update(self, dt, externalRotation=0, externalRotationInc=0):
+    def update(self, dt, externalRotation=0, externalRotationInc=0, alphaPercentage=1): # 0: 0% -> 1: 100%
         self.lastRotationIncrease = dt*(externalRotationInc+1)
         self.rotation += self.lastRotationIncrease
-        shapeArguments = tuple([polygon.giveGFXDrawArgument(dt, self.rotation)
+        shapeArguments = tuple([polygon.giveGFXDrawArgument(dt, self.rotation, alphaPercentage)
                                for polygon in self.polygons.values()])
         self.image = GFXDrawShapes(shapeArguments)
 
@@ -149,14 +170,14 @@ class PolygonInformationObject(object):
         self.meanInAlphaLimit = (self.alphaLimit[0] + self.alphaLimit[1])/2
         self.alpha = 0
 
-    def giveGFXDrawArgument(self, dt, rotation):
+    def giveGFXDrawArgument(self, dt, rotation, alphaPercentage):
         # what does it need to return... well it needs to return the GFXDrawShapes arg and Max x and y so it can make a surface large enough. simple
         # lets first see what parts of the previous code we need
         # realised it doesn't need x and y
         self.alpha = (perf_counter() - self.start) / \
             self.alphaShiftDuration*self.alphaDifference
-        self.IMGAlpha = self.alphaOverflowFunc(
-            self.alpha, self.alphaLimit, self.alphaReverse, self.alphaDifference, self.alphaWaveLength, self.meanInAlphaLimit)
+        self.IMGAlpha = (self.alphaOverflowFunc(
+            self.alpha, self.alphaLimit, self.alphaReverse, self.alphaDifference, self.alphaWaveLength, self.meanInAlphaLimit))*alphaPercentage
 
         rotation *= self.rotationSpeed
         self.rotationSpeed += self.rotationIncrementSpeed*dt

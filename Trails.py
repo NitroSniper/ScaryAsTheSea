@@ -1,14 +1,13 @@
 
 from time import perf_counter
 from engine import TimeIt
-from random import randint
-
+from Composition import GameListPointers
 #this is used as the actual Trail
 
 
 
 
-class TrailObject(object):
+class TrailObject(GameListPointers):
     def __init__(self, point, polygon, killTimer):
         self.point = point
         # self.point.velocity = 5
@@ -20,7 +19,7 @@ class TrailObject(object):
         self.timer = killTimer
 
 
-    def update(self, dt, TRAILS):
+    def update(self, dt):
         self.polygon.update(dt)
         self.point.update(dt)
 
@@ -30,7 +29,7 @@ class TrailObject(object):
         self.position = self.point.position
         if self.timer is not None:
             if TimeIt(self.timer, self.start):
-                TRAILS.remove(self)
+                TrailObject.TRAILS.remove(self)
 
 
 

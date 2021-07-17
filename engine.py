@@ -7,15 +7,18 @@ from pygame import gfxdraw
 from inspect import getfullargspec
 
 
-def Collision(playerInfo, ListofBulletInfo):
-    Collide, NearHit = False, False
-    for bulletInfo in ListofBulletInfo:
-        if playerInfo[0].colliderect(bulletInfo[0]):
-            offset = (int(playerInfo[2][0] - bulletInfo[2][0]),
-                      int(playerInfo[2][1] - bulletInfo[2][1]))
-            if bulletInfo[1].overlap(playerInfo[1], offset):
-                Collide = True
-    return NearHit, Collide
+# def Collision(playerInfo, ListofBulletInfo):
+#     Collide, NearHit = False, False
+#     for bulletInfo in ListofBulletInfo:
+#         if playerInfo[0].colliderect(bulletInfo[0]):
+#             offset = (int(playerInfo[2][0] - bulletInfo[2][0]),
+#                       int(playerInfo[2][1] - bulletInfo[2][1]))
+#             if bulletInfo[1].overlap(playerInfo[1], offset):
+#                 Collide = True
+#     return NearHit, Collide
+
+
+
 
 
 def RotAngle(angle):
@@ -95,7 +98,7 @@ def GFXDrawShapes(listOfGFXDrawShape):
         for i in range(numPoints):
             vertices.append((maxRadius + radius * sin(i * angle + radians(angleOffset)),
                             maxRadius + radius * cos(i * angle + radians(angleOffset))))
-        # gfxdraw.aapolygon(surf, vertices, color + (alpha,))
+        #gfxdraw.aapolygon(surf, vertices, color + (alpha,))
         gfxdraw.filled_polygon(surf, vertices, color + (alpha,))
     # pygame.image.save(surf, 'Hello.png')
     # raise Exception
@@ -109,3 +112,12 @@ if __name__ == '__main__':
                    (3, 30, (255, 255, 255)),
                    (3, 14, (255, 255, 255))])
 
+
+
+
+
+
+# For future me, if you are ever making mask collision let me tell you how.
+# to do it you need to have a mask1 and mask2 with each having there own cordinate. It does word with TL coordinates
+# when making the offset you need to make sure that if you are doing mask1.overlap(mask2, offset)
+# offset must be (mask2 - mask1) coordinates.... then you are done!
